@@ -6,7 +6,7 @@
 
 Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja teretanom pomoću IoT tehnologija. Projekt se sastoji od dva glavna modula: upravljanje korisnicima i praćenje pristupa teretani putem RFID kartica. Sustav koristi kombinaciju hardverskih komponenti (Raspberry Pi, Arduino Wemos D1) i softverskih komponenti (Python, Flask, MySQL) kako bi omogućio siguran i efikasan rad teretane.
 
-### **Modul za upravljanje korisnicima i teretanom (Raspberry Pi)**
+### **1. Modul za upravljanje korisnicima i teretanom (Raspberry Pi)**
 
 #### **Hardver**
 - **Raspberry Pi:** Središnji uređaj sustava, na kojem se izvršava GUI aplikacija za upravljanje korisnicima i teretanom.
@@ -41,7 +41,7 @@ Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja tereta
 6. **Odjava:**  
    Operateri se mogu odjaviti iz sustava, što ih vraća na ekran za prijavu.
 
-### **Modul za praćenje ulaska i izlaska korisnika (Arduino Wemos D1)**
+### **2. Modul za praćenje ulaska i izlaska korisnika (Arduino Wemos D1)**
 
 #### **Hardver**
 - **Arduino Wemos D1 (ESP8266):** Mikrokontroler koji služi za bežičnu komunikaciju i upravljanje RFID čitačem.
@@ -63,7 +63,7 @@ Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja tereta
 2. **Komunikacija sa serverom:**  
    Kada se RFID kartica očita, mikrokontroler šalje HTTP zahtjev serveru (Flask serveru na Raspberry Pi-u) kako bi provjerio može li korisnik ući u teretanu, te ovisno o odgovoru sa servera pali zelenu ili crvenu LED lampicu.
 
-### **Server za provjeru RFID kartica (Flask aplikacija)**
+### **3. Server za provjeru RFID kartica (Flask aplikacija)**
 
 #### **Softver**
 - **Flask:** Python web framework
