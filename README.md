@@ -90,4 +90,5 @@ Nakon puno truda kako bi se sve komponente spojile i međusobno radile u skladu,
 
 **Izradili:** Matej Jurec i Hrvoje Stranput  
 **Mentor:** Dr. sc. Juraj Benić, mag.ing.
+
 **Osijek, 2024.**
