@@ -11,7 +11,7 @@ Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja tereta
 #### **Hardver**
 - **Raspberry Pi:** Središnji uređaj sustava, na kojem se izvršava GUI aplikacija za upravljanje korisnicima i teretanom.
 - **Ekran osjetljiv na dodir:** Koristi se za interakciju s grafičkim korisničkim sučeljem (GUI).
-- **RFID čitač (MFRC522):** Služi za očitavanje RFID kartica korisnika prilikom ulaska u teretanu.
+- **RFID čitač (MFRC522):** Služi za očitavanje RFID kartica prilikom dodavanja korisnika u bazu podataka
 
 #### **Softver**
 - **Operativni sustav:** Raspberry Pi OS.
