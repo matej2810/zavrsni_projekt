@@ -28,15 +28,48 @@ Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja tereta
 
 2. **Prijava korisnika:**  
    Operateri (admin) se prijavljuju u sustav pomoću korisničkog imena i lozinke. Aplikacija provjerava vjerodajnice u bazi podataka i omogućava pristup ako su vjerodajnice točne.
+```python
+def login(username, password):
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM admins WHERE username=%s AND password=%s", (username, password))
+    result = cursor.fetchone()
+    if result:
+        return True
+    return False
+```
 
 3. **Dodavanje članova:**  
    Operater može dodati nove članove unosom imena, skeniranjem RFID kartice i odabirom uloge (član ili osoblje). Informacije se pohranjuju u bazu podataka.
+```python
+def add_member(name, role):
+    id, text = reader.read()
+    cursor = connection.cursor()
+    cursor.execute("INSERT INTO members (name, role, rfid) VALUES (%s, %s, %s)", (name, role, id))
+    connection.commit()
+```
 
 4. **Kontinuirano očitavanje RFID kartica:**  
    RFID čitač neprestano sluša dolazne kartice. Kada se kartica skenira, ID kartice automatski se popunjava u odgovarajuće polje u aplikaciji.
 
+```python
+def read_rfid():
+    while True:
+        id, text = reader.read()
+        # Ažuriraj GUI s očitanim ID-om
+        update_gui_with_rfid(id)
+threading.Thread(target=read_r
+```
+
 5. **Upravljanje korisnicima:**  
    Operater može pregledavati popis svih članova, resetirati broj njihovih ulazaka ili uklanjati članove iz sustava.
+```python
+def manage_members():
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM members")
+    members = cursor.fetchall()
+    # Prikaz članova u GUI aplikaciji
+    display_members_in_gui(members)
+```
 
 6. **Odjava:**  
    Operateri se mogu odjaviti iz sustava, što ih vraća na ekran za prijavu.
@@ -59,9 +92,50 @@ Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja tereta
 1. **Povezivanje na Wi-Fi:**  
    Mikrokontroler se povezuje na lokalnu Wi-Fi mrežu pomoću zadanog SSID-a i lozinke.  
    *(Pokušali smo napraviti da se spaja na hotspot od Raspberryja što smo i uspjeli, ali je nemoguće napraviti da Flask server bude u toj novoj mreži odnosno hotspotu. Kada bi se napravio hotspot da samo proširi mrežu, onda je veliki upitnik hoće li to funkcionirati na faksu. Zato je napravljeno univerzalno rješenje koje radi apsolutno svuda - Raspberry i Arduino spojeni su na hotspot od mobitela te sva međusobna komunikacija radi odlično na taj način.)*
+```cpp
+#include <ESP8266WiFi.h>
+
+const char* ssid = "your_SSID";
+const char* password = "your_PASSWORD";
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+
+  Serial.println("Connected to WiFi");
+}
+```
 
 2. **Komunikacija sa serverom:**  
    Kada se RFID kartica očita, mikrokontroler šalje HTTP zahtjev serveru (Flask serveru na Raspberry Pi-u) kako bi provjerio može li korisnik ući u teretanu, te ovisno o odgovoru sa servera pali zelenu ili crvenu LED lampicu.
+```cpp
+void checkAccess(String rfid) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin("http://your_raspberry_ip:5000/check_access?rfid=" + rfid);
+    int httpCode = http.GET();
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.println(payload);
+      if (payload == "allowed") {
+        digitalWrite(GREEN_LED, HIGH);
+        digitalWrite(RED_LED, LOW);
+      } else {
+        digitalWrite(GREEN_LED, LOW);
+        digitalWrite(RED_LED, HIGH);
+      }
+    }
+
+    http.end();
+  }
+}
+```
 
 ### **3. Server za provjeru RFID kartica (Flask aplikacija)**
 
@@ -73,7 +147,19 @@ Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja tereta
 
 1. **Inicijalizacija aplikacije:**  
    Flask aplikacija pokreće se na Raspberry Pi-u, a server sluša dolazne zahtjeve na specifičnoj IP adresi i portu.
+```python
+from flask import Flask, request, jsonify
+import pymysql
 
+app = Flask(__name__)
+
+def init_db():
+    return pymysql.connect(host='localhost',
+                           user='user',
+                           password='password',
+                           database='gym_db')
+db = init_db()
+```
 2. **Provjera RFID kartica:**  
    Kada Wemos D1 pošalje UID RFID kartice, Flask aplikacija provjerava bazu podataka kako bi utvrdila status korisnika.  
    - **Ako je korisnik član:** Provjerava se broj ulazaka:
@@ -83,7 +169,27 @@ Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja tereta
 
 3. **Slanje odgovora:**  
    Flask aplikacija vraća JSON odgovor mikrokontroleru koji zatim kontrolira crvene i zelene LED lampice i pali ih ovisno o odgovoru.
+```python
+@app.route('/check_access', methods=['GET'])
+def check_access():
+    rfid = request.args.get('rfid')
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM members WHERE rfid=%s", (rfid,))
+    member = cursor.fetchone()
 
+    if member:
+        # Provjera broja ulazaka
+        if member['role'] == 'staff' or member['entries'] < 3:
+            cursor.execute("UPDATE members SET entries = entries + 1 WHERE rfid=%s", (rfid,))
+            db.commit()
+            return jsonify({"status": "allowed"})
+        else:
+            return jsonify({"status": "denied"})
+    return jsonify({"status": "denied"})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+```
 ### **Zaključak**
 
 Nakon puno truda kako bi se sve komponente spojile i međusobno radile u skladu, nastao je ovaj projekt. Projekt pruža puno mogućnosti raznih proširenja, npr. spajanja na motor koji onda otvara prava vrata ili na relej. GUI aplikacija je jako lagana i intuitivna za korištenje, ali mogu se dodati i još neke napredne stvari koje nisu bile u opisu našeg projekta, a to je praćenje je li korisnik platio mjesečnu članarinu, ili npr. kada se unese novi korisnik da se on zadrži u bazi podataka idućih mjesec dana, a zatim se gleda je li produžio članstvo te u odnosu na to ostaje ili se miče iz baze. Mogućnosti su razne, ali ovaj projekt je zagrebao površinu beskonačnih mogućnosti IoT tehnologije koja svakim danom sve više napreduje.
