@@ -2,6 +2,8 @@
 
 ## **Opis projekta: Pametna teretana s primjenom IoT tehnologija**
 
+*Link na video koji pokazuje kako sve to radi:*
+
 ### **Uvod**
 
 Projekt "Pametna teretana" razvijen je s ciljem modernizacije upravljanja teretanom pomoću IoT tehnologija. Projekt se sastoji od dva glavna modula: upravljanje korisnicima i praćenje pristupa teretani putem RFID kartica. Sustav koristi kombinaciju hardverskih komponenti (Raspberry Pi, Arduino Wemos D1) i softverskih komponenti (Python, Flask, MySQL) kako bi omogućio siguran i efikasan rad teretane.
@@ -194,7 +196,9 @@ if __name__ == '__main__':
 
 Nakon puno truda kako bi se sve komponente spojile i međusobno radile u skladu, nastao je ovaj projekt. Projekt pruža puno mogućnosti raznih proširenja, npr. spajanja na motor koji onda otvara prava vrata ili na relej. GUI aplikacija je jako lagana i intuitivna za korištenje, ali mogu se dodati i još neke napredne stvari koje nisu bile u opisu našeg projekta, a to je praćenje je li korisnik platio mjesečnu članarinu, ili npr. kada se unese novi korisnik da se on zadrži u bazi podataka idućih mjesec dana, a zatim se gleda je li produžio članstvo te u odnosu na to ostaje ili se miče iz baze. Mogućnosti su razne, ali ovaj projekt je zagrebao površinu beskonačnih mogućnosti IoT tehnologije koja svakim danom sve više napreduje.
 
+*Izrađeno na Fakultetu primijenjene matematike i informatike u Osijeku u sklopu zavrsšnog projekta.*
+
 **Izradili:** Matej Jurec i Hrvoje Stranput  
-**Mentor:** Dr. sc. Juraj Benić, mag.ing.
+**Mentor:** mag. ing. mech. Juraj Benić
 
 **Osijek, 2024.**
