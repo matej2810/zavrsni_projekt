@@ -2,7 +2,7 @@
 
 ## **Opis projekta: Pametna teretana s primjenom IoT tehnologija**
 
-*Link na video koji pokazuje kako sve to radi:*
+*Link na video koji pokazuje kako sve to radi:* https://drive.google.com/drive/folders/1GhCaArUmCwaXT4xZmEsiQ6BthXwq6fgt
 
 ### **Uvod**
 
