@@ -96,8 +96,12 @@ class GymManagementApp:
                 time.sleep(1)
 
     def update_rfid_entry(self, rfid_uid):
+        # Convert the RFID UID to hexadecimal and get the first 8 digits
+        hex_uid = hex(rfid_uid)[2:].upper()  # Convert to hex, remove '0x', and make uppercase
+        hex_uid = hex_uid[:8]  # Take the first 8 characters
+    
         self.rfid_entry.delete(0, tk.END)
-        self.rfid_entry.insert(0, str(rfid_uid))
+        self.rfid_entry.insert(0, hex_uid)
 
     def add_member(self):
         name = self.name_entry.get()
@@ -131,15 +135,27 @@ class GymManagementApp:
         members_frame = tk.Frame(canvas)
         canvas.create_window((0, 0), window=members_frame, anchor="nw")
 
-        self.cursor.execute("SELECT id, name, rfid_card, entry_count, role FROM members")
+        self.cursor.execute("SELECT id, name, rfid_card, role FROM members")
         members = self.cursor.fetchall()
 
-        for idx, member in enumerate(members):
-            member_info = f"ID: {member[0]}, Name: {member[1]}, RFID: {member[2]}, Entries: {member[3]}, Role: {member[4]}"
-            tk.Label(members_frame, text=member_info).grid(row=idx, column=0, padx=10, pady=5)
+        self.member_labels = {}
 
-            tk.Button(members_frame, text="Remove", command=lambda m_id=member[0]: self.remove_member(m_id)).grid(row=idx, column=1, padx=10, pady=5)
-            tk.Button(members_frame, text="Reset Entries", command=lambda m_id=member[0]: self.reset_entries(m_id)).grid(row=idx, column=2, padx=10, pady=5)
+        for idx, member in enumerate(members):
+            member_id, name, rfid_card, role = member
+            
+            # Display "Max entries 3" for members and "Unlimited" for staff
+            if role == "staff":
+                entry_display = "Unlimited"
+            else:
+                entry_display = "Max entries 3"
+            
+            member_info = f"ID: {member_id}, Name: {name}, RFID: {rfid_card}, Entries: {entry_display}, Role: {role}"
+            label = tk.Label(members_frame, text=member_info)
+            label.grid(row=idx, column=0, padx=10, pady=5)
+            self.member_labels[member_id] = label
+
+            tk.Button(members_frame, text="Remove", command=lambda m_id=member_id: self.remove_member(m_id)).grid(row=idx, column=1, padx=10, pady=5)
+            tk.Button(members_frame, text="Reset Entries", command=lambda m_id=member_id: self.reset_entries(m_id)).grid(row=idx, column=2, padx=10, pady=5)
 
         tk.Button(members_frame, text="Back", command=self.show_main_screen).grid(row=len(members), column=0, columnspan=3, pady=10)
 
