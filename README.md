@@ -1,4 +1,4 @@
-# Završni projekt studenata treće godine prijediplomskog studija Matematika i računarstvo na Fakultetu primijenjene matematike i informatike u Osijeku (Matej Jurec i Hrvoje Stranput)
+# Završni projekt studenata treće godine prijediplomskog studija Matematika i računarstvo na Fakultetu primijenjene matematike i informatike u Osijeku
 
 ## **Opis projekta: Pametna teretana s primjenom IoT tehnologija**
 
