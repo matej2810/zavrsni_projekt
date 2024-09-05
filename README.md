@@ -54,12 +54,22 @@ def add_member(name, role):
    RFID čitač neprestano sluša dolazne kartice. Kada se kartica skenira, ID kartice automatski se popunjava u odgovarajuće polje u aplikaciji.
 
 ```python
-def read_rfid():
-    while True:
-        id, text = reader.read()
-        # Ažuriraj GUI s očitanim ID-om
-        update_gui_with_rfid(id)
-threading.Thread(target=read_r
+    def listen_for_rfid(self):
+        while True:
+            try:
+                rfid_uid = self.rfid_reader.read_id()
+                self.root.after(0, self.update_rfid_entry, rfid_uid)
+            except Exception as e:
+                print(f"Error reading RFID: {e}")
+                time.sleep(1)
+
+    def update_rfid_entry(self, rfid_uid):
+        # Convert the RFID UID to hexadecimal and get the first 8 digits
+        hex_uid = hex(rfid_uid)[2:].upper()  # Convert to hex, remove '0x', and make uppercase
+        hex_uid = hex_uid[:8]  # Take the first 8 characters
+    
+        self.rfid_entry.delete(0, tk.END)
+        self.rfid_entry.insert(0, hex_uid)
 ```
 
 5. **Upravljanje korisnicima:**  
